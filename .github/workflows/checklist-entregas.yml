@@ -1,0 +1,36 @@
+name: Checklist de entregas
+
+# INF 320 es un curso no-code (BPMN, automatizaciones, chatbots) — no hay
+# código para correr pruebas unitarias como en INF 222. Este workflow no
+# "califica" el contenido (eso lo hace el docente con la rúbrica), pero da
+# retroalimentación inmediata al hacer push confirmando si los archivos
+# esperados para la semana ya existen en la ruta correcta. Actívalo/edítalo
+# a medida que se acerque cada entregable.
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  checklist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verificar archivos esperados (informativo, no bloqueante)
+        run: |
+          echo "## Checklist de entregables — INF 320" >> "$GITHUB_STEP_SUMMARY"
+          check() {
+            if [ -e "$1" ]; then
+              echo "- ✅ \`$1\`" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "- ⬜ \`$1\` (aún no existe)" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          }
+          # Ajusta esta lista a los entregables reales de tu repo/equipo
+          check "syllabus/syllabus-oficial-inf320.md"
+          check "politicas/politica-ia.md"
+          check "politicas/reglas-del-aula.md"
+          find . -maxdepth 3 -iname "*.md" -path "*/semana-*/*" 2>/dev/null | sort | while read -r f; do
+            check "$f"
+          done

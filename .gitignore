@@ -1,0 +1,9 @@
+.DS_Store
+*.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+*.swp
+.vscode/
+# No subir capturas con datos personales reales
+*-datos-reales.*
