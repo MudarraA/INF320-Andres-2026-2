@@ -1,82 +1,45 @@
-# Semana 7 — Plataformas RPA y Alternativas No-code/IA
+Lab 3: primer flujo no-code funcional
 
-**Módulo 3: Automatización de marketing y ventas en la cadena de suministro y logística**
+Flujo: Registro automático de solicitudes de devolución de BIXO
 
----
+Herramienta: Make
 
-## Objetivos de aprendizaje
+Por qué este flujo: en el Checkpoint 1 elegí automatizar el primer tramo de la devolución de pedidos de BIXO: recibir la solicitud y mandarle las instrucciones al cliente sin hacerlo a mano. Este lab es una versión pequeña de esa idea para practicar con una herramienta no-code.
 
-- Describir las principales plataformas RPA (UiPath, Blue Prism, Automation Anywhere) y sus diferencias.
-- Describir las alternativas no-code/IA (Zapier, Make, Power Automate, n8n) y cuándo son preferibles.
-- Construir un primer flujo automatizado simple en una plataforma no-code.
-
----
-
-## Contenidos de la semana
-
-### Teoría (martes)
-
-1. Comparativa de plataformas RPA clásicas:
-   - **UiPath**: líder de mercado, entorno visual (Studio), Community Edition gratuita
-   - **Blue Prism**: orientado a enterprise, alta seguridad
-   - **Automation Anywhere**: Cloud-native, IQ Bot para IA
-2. Alternativas no-code/low-code con IA:
-   - **Zapier**: la más accesible, conector entre apps SaaS
-   - **Make (Integromat)**: más potente y visual, bueno para lógica compleja
-   - **Power Automate**: integrado con el ecosistema Microsoft
-   - **n8n**: open source, autoalojable
-3. Criterios de selección: perfil del usuario (técnico vs. negocio), costo, ecosistema de conectores, complejidad del proceso
-
-### Práctica/Laboratorio (jueves)
-
-**Lab 3**: construir el primer flujo automatizado simple en Zapier o Make
-
-Ejemplo: "Cuando llega un email con el asunto 'Nuevo pedido', crear una fila en Google Sheets y enviar una notificación por email/Slack"
-
----
-
-## Entregable de la semana
-
-**Laboratorio 3** — Primer flujo no-code funcional
-
-- Sube capturas de pantalla del flujo configurado + descripción de la lógica
-- Archivo: `modulo-3-herramientas-bpm-rpa/semana-07/lab03-primer-flujo/README.md`
-
-**Quiz** (en clase) — plataformas BPM/RPA/no-code
-
----
-
-## Comparativa de plataformas no-code
-
-| Plataforma | Facilidad | Conectores | Plan gratuito | Mejor para |
-|-----------|-----------|-----------|--------------|-----------|
-| Zapier | ★★★★★ | 6,000+ | 100 tareas/mes | Principiantes, integraciones simples |
-| Make | ★★★★ | 1,000+ | 1,000 ops/mes | Flujos visuales complejos |
-| Power Automate | ★★★ | 900+ (Microsoft) | Con M365 educativo | Ecosistema Microsoft |
-| n8n | ★★★ | 400+ | Unlimited (self-hosted) | Usuarios técnicos, control total |
-
----
-
-## Cómo documentar tu flujo (formato de entrega)
-
-```markdown
-## Flujo: [nombre del flujo]
-
-**Herramienta**: Zapier / Make / Power Automate / n8n
-
-**Disparador (Trigger)**:
+Disparador (Trigger):
 - Aplicación: Gmail
-- Evento: "Nuevo email recibido" con asunto que contiene "Nuevo pedido"
+- Evento: "Watch Emails" (llega un correo nuevo)
+- Filtro: tipo "Gmail filter" con la búsqueda `subject:"Solicitud de devolución"`, para que solo se active con correos que tengan ese asunto
 
-**Pasos del flujo**:
-1. ACCIÓN: Google Sheets → Agregar fila
-   - Columna "Fecha": {{ timestamp }}
-   - Columna "Asunto": {{ email.subject }}
-2. ACCIÓN: Gmail → Enviar email
-   - Para: angel.avila@up.ac.pa
-   - Asunto: "Procesado: {{ email.subject }}"
+Pasos del flujo:
+1. ACCIÓN: Google Sheets → Add a Row (hoja "Devoluciones BIXO")
+   - Columna "Fecha": fecha en que llegó el correo
+   - Columna "Cliente": correo del remitente
+   - Columna "Asunto": asunto del correo
+   - Columna "Estado": "Instrucciones enviadas" (texto fijo)
+2. ACCIÓN: Gmail → Send an Email
+   - Para: el correo del remitente de la solicitud
+   - Asunto: "Recibimos tu solicitud de devolucion"
+   - Mensaje: un texto corto con las instrucciones para devolver el producto
 
-**[Captura de pantalla del flujo en la herramienta]**
+Lógica del flujo: cuando alguien manda un correo con ese asunto, Make lo detecta, lo guarda como una fila en una hoja de cálculo (así queda un registro de todas las solicitudes) y le responde al cliente con las instrucciones. Antes, alguien tenía que leer el correo, anotarlo y contestar a mano. Aquí todo pasa en segundos y sin intervención.
 
-**Declaración de uso de IA**: (si aplica)
-```
+Cómo lo probé: desde otra cuenta de correo mandé un mensaje con el asunto "Solicitud de devolución" a la cuenta conectada a Make. El flujo corrió una vez, los tres módulos se ejecutaron bien, se agregó la fila en la hoja y la otra cuenta recibió la respuesta con las instrucciones.
+
+Capturas de pantalla:
+
+El flujo configurado en Make, con los tres módulos ejecutados:
+
+![Flujo configurado en Make](captura-flujo.png)
+
+La fila que se creó en Google Sheets:
+
+![Fila creada en Google Sheets](captura-sheets.png)
+
+El correo de respuesta que recibió el cliente:
+
+![Correo de respuesta recibido](captura-correo.png)
+
+Declaración de uso de IA:
+
+Para este laboratorio usé dos herramientas de IA. Gemini lo usé para conocer mejor la plataforma que iba a usar (Make) y entender cómo funciona. Con Claude me guié paso a paso para armar el flujo y me ayudó a organizar todo el trabajo, desde la idea del flujo basada en mi Checkpoint 1 hasta este README. El flujo lo armé y lo probé yo en mi cuenta de Make, y las capturas son de esa prueba. Revisé el texto antes de entregarlo y me hago responsable de lo que entrego.
